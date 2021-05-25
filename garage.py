@@ -1,3 +1,5 @@
+names = ["william","oliver","elizabeth","lucy","natalie","nicole","regina"]
+houses = [x for x in range(1, 8)]
 everyday = ["accord", "dart", "escort", "impala", "opel", "taurus", "yugo"]
 everyday_year = [2001, 2002, 2003, 2004, 2005, 2006, 2007]
 classic = ["corniche", "corvair", "countach", "el dorado", "ferrari", "porsche", "spider"]
@@ -12,6 +14,7 @@ import csv
 
 with open("possibilities.csv", "w") as blah:
   csv_writer = csv.writer(blah)
+  csv_writer.writerow(("name", "house", "everyday", "eyear", "classic", "cyear"))
   for x in possibilities:
     csv_writer.writerow(x)
 
