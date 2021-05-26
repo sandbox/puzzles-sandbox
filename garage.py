@@ -203,6 +203,8 @@ drop_inplace(df, ~(df['name'].isin(["lucy"])) & (df['eyear'].isin([2007]) ))
 
 # saved = df.copy(deep=True)
 
+# guess: lucy is 2006 yields contradiction
+
 # guess: lucy is 2007 and lucy is in 7
 drop_inplace(df, (df['name'].isin(["lucy"])) & (df['eyear'].isin([2006]) ))
 drop_inplace(df, (df['name'].isin(["lucy"])) & ~(df['house'].isin([7]) ))
@@ -219,295 +221,38 @@ drop_inplace(df, (df['house'].isin([2])) & ~(df['everyday'].isin(['opel', 'yugo'
 ## second guess: lucy owns dart or lucy owns spider
 saved2 = df.copy(deep=True)
 
-## lucy owns dart
-drop_inplace(df, (df['name'].isin(["lucy"])) & ~(df['everyday'].isin(['dart']) ))
-drop_inplace(df, ~(df['name'].isin(["lucy"])) & (df['everyday'].isin(['dart']) ))
-drop_inplace(df, ~(df['name'].isin(["lucy"])) & (df['classic'].isin(['ferrari']) ))
-drop_inplace(df, ~(df['name'].isin(["nicole"])) & (df['classic'].isin(['corvair']) ))
-drop_inplace(df, ~(df['name'].isin(["natalie"])) & (df['classic'].isin(['corniche']) ))
-drop_inplace(df, (df['house'].isin([6])) & ~(df['classic'].isin(['spider']) ))
-drop_inplace(df, ~(df['house'].isin([6])) & (df['classic'].isin(['spider']) ))
-drop_inplace(df, (df['classic'].isin(['porsche'])) & (df['eyear'].isin([2001]) )) # everyday with porsche is same year as yugo, yugo is 2002 - 2006
-# >>> x = pc('classic', 'house')
-# [('corniche', [1]),
-#  ('corvair', [3, 4, 5]),
-#  ('countach', [2, 4]),
-#  ('el dorado', [3, 4, 5]),
-#  ('ferrari', [7]),
-#  ('porsche', [3, 4, 5]),
-#  ('spider', [6])]
-drop_inplace(df, (df['classic'].isin(['countach'])) & (df['house'].isin([4]) )) # countach can't be in 4
-# if regina sees el dorado and corvair, then they cannot be next to each other => corvair / el dorado are 3 or 5 => porsche is in 4 and regina is in 4
-drop_inplace(df, (df['classic'].isin(['porsche'])) & ~(df['house'].isin([4]) ))
-drop_inplace(df, ~(df['classic'].isin(['porsche'])) & (df['house'].isin([4]) ))
-drop_inplace(df, (df['name'].isin(['regina'])) & ~(df['house'].isin([4]) ))
-drop_inplace(df, ~(df['name'].isin(['regina'])) & (df['house'].isin([4]) ))
-# [('elizabeth', [3, 5, 6]),
-#  ('lucy', [7]),
-#  ('natalie', [1]),
-#  ('nicole', [3, 5]),
-#  ('oliver', [2, 6]),
-#  ('regina', [4]),
-#  ('william', [2, 6])]
-# => elizabeth cannot be in 6
-drop_inplace(df, (df['name'].isin(['elizabeth'])) & (df['house'].isin([6]) ))
-# [('elizabeth', ['accord', 'taurus']),
-#  ('lucy', ['dart']),
-#  ('natalie', ['escort']),
-#  ('nicole', ['accord', 'taurus']),
-#  ('oliver', ['impala', 'opel', 'taurus', 'yugo']),
-#  ('regina', ['impala', 'taurus']),
-#  ('william', ['impala', 'opel', 'taurus', 'yugo'])]
-# => accord/taurus is elizabeth/nicole => regina is impala, and william/oliver are opel/yugo
-drop_inplace(df, ~(df['name'].isin(['elizabeth','nicole'])) & (df['everyday'].isin(['accord', 'taurus']) ))
-drop_inplace(df, ~(df['name'].isin(['regina'])) & (df['everyday'].isin(['impala']) ))
-drop_inplace(df, (df['name'].isin(['regina'])) & ~(df['everyday'].isin(['impala']) ))
-#16. The owner of the 2006 car lives in a house whose number is exactly 2 less than the Taurus’s owner.
-# [(1, ['escort']),
-#  (2, ['opel', 'yugo']),
-#  (3, ['accord', 'taurus']),
-#  (4, ['impala']),
-#  (5, ['accord', 'taurus']),
-#  (6, ['opel', 'yugo']),
-#  (7, ['dart'])]
-# => 2006 is in 1 or in 3,
-# [(1, [2003, 2005]),
- # (2, [2001, 2003, 2004, 2005, 2006]),
- # (3, [2001, 2002, 2004, 2005, 2006]),
- # (4, [2004]),
- # (5, [2001, 2002, 2003, 2004, 2006]),
- # (6, [2001, 2002, 2003, 2004, 2005, 2006]),
- # (7, [2007])]
- # => 2006 is not in 1 => 2006 in 3 => taurus is in 5
-drop_inplace(df, ~(df['house'].isin([5])) & (df['everyday'].isin(['taurus']) ))
-drop_inplace(df, (df['house'].isin([5])) & ~(df['everyday'].isin(['taurus']) ))
-drop_inplace(df, (df['house'].isin([3])) & ~(df['eyear'].isin([2006]) ))
+## lucy owns spider
+drop_inplace(df, (df['name'].isin(["lucy"])) & ~(df['classic'].isin(['spider']) ))
+drop_inplace(df, ~(df['name'].isin(["lucy"])) & (df['classic'].isin(['spider']) ))
+drop_inplace(df, (df['house'].isin([6])) & ~(df['everyday'].isin(['dart']) ))
+drop_inplace(df, ~(df['house'].isin([6])) & (df['everyday'].isin(['dart']) ))
+drop_inplace(df, (df['house'].isin([6])) & (df['name'].isin(['william', 'oliver']) ))
+
+drop_inplace(df, (df['house'].isin([3, 5, 6])) & ~(df['name'].isin(['elizabeth', 'regina', 'nicole']) ))
+drop_inplace(df, ~(df['house'].isin([3, 5, 6])) & (df['name'].isin(['elizabeth', 'regina', 'nicole']) ))
+# >>> x = pc('house', 'classic'); print(len(x))
 # [(1, ['corniche']),
-#  (2, ['countach']),
-#  (3, ['el dorado']),
-#  (4, ['porsche']),
-#  (5, ['corvair', 'el dorado']),
-#  (6, ['spider']),
-#  (7, ['ferrari'])]
-# => corvair is in 5
-drop_inplace(df, (df['house'].isin([5])) & ~(df['classic'].isin(['corvair']) ))
-drop_inplace(df, ~(df['house'].isin([5])) & (df['classic'].isin(['corvair']) ))
-# [(1, [21]),
-#  (2, [22, 24, 25, 26, 27]),
-#  (3, [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]),
-#  (4, [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36]),
-#  (5, [33, 34, 35, 36]),
-#  (6, [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]),
-#  (7, [28])]
-# biggest difference in age between an owner’s two cars is 36 years. This owner lives next to Oliver
-#   oliver lives in 2 or 6
-#   only 4, 5, have 36 age difference => 5 must have 36 year age difference and oliver lives in 6
-drop_inplace(df, (df['house'].isin([5])) & ~(df['dyear'].isin([36]) ))
-drop_inplace(df, ~(df['house'].isin([6])) & (df['name'].isin(['oliver']) ))
-drop_inplace(df, (df['house'].isin([6])) & ~(df['name'].isin(['oliver']) ))
-# >>> x = pc('house', 'eyear'); print(len(x))
-# [(1, [2003, 2005]),
-#  (2, [2001, 2003, 2004, 2005, 2006]),
-#  (3, [2006]),
-#  (4, [2004]),
-#  (5, [2001, 2002, 2004]),
-#  (6, [2001, 2002, 2003, 2004, 2005, 2006]),
-#  (7, [2007])]
+#  (2, ['countach', 'ferrari']),
+#  (3, ['corvair', 'el dorado', 'ferrari', 'porsche']),
+#  (4, ['corvair', 'countach', 'el dorado', 'ferrari', 'porsche']),
+#  (5, ['corvair', 'el dorado', 'ferrari', 'porsche']),
+#  (6, ['corvair', 'el dorado', 'ferrari']),
+#  (7, ['spider'])]
 # 7
-# >>> x = pc('house', 'name'); print(len(x))
-# [(1, ['natalie']),
-#  (2, ['william']),
-#  (3, ['elizabeth']),
-#  (4, ['regina']),
-#  (5, ['nicole']),
-#  (6, ['oliver']),
-#  (7, ['lucy'])]
-# 7
-# william does not live next to owner of a 2003 vehicle and william in 2 => house in 1 is not 2003
-#
-drop_inplace(df, (df['house'].isin([1, 3])) & (df['eyear'].isin([2003]) ))
-# [(1, [21]),
-#  (2, [22, 24, 25, 26, 27]),
-#  (3, [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]),
-# william in 2 and does not live to owner whose car is 26 years apart => 3 does not have year difference of 26
-drop_inplace(df, (df['house'].isin([1, 3])) & (df['dyear'].isin([26]) ))
-# >>> x = pc('everyday', 'eyear'); print(len(x))
-# [('accord', [2006]),
-#  ('dart', [2007]),
-#  ('escort', [2005]),
-#  ('impala', [2004]),
-#  ('opel', [2001, 2002, 2003, 2004, 2005, 2006]),
-#  ('taurus', [2001, 2002, 2004]),
-#  ('yugo', [2002, 2003, 2004, 2005, 2006])]
-# 7
-# >>> x = pc('everyday', 'classic'); print(len(x))
-# [('accord', ['el dorado']),
-#  ('dart', ['ferrari']),
-#  ('escort', ['corniche']),
-#  ('impala', ['porsche']),
-#  ('opel', ['countach', 'spider']),
-#  ('taurus', ['corvair']),
-#  ('yugo', ['countach', 'spider'])]
-# 7
-# the Yugo and the car owned by the person who also owned the Porsche are same year
-# impala in 2004 => yugo in 2004
-# no other everyday cars have same year => only impala and yugo are in 2004
-drop_inplace(df, ~(df['eyear'].isin([2004])) & (df['everyday'].isin(['yugo', 'impala']) ))
-drop_inplace(df, (df['eyear'].isin([2004])) & ~(df['everyday'].isin(['yugo', 'impala']) ))
-# [('accord', [2006]),
-# ('dart', [2007]),
-# ('escort', [2005]),
-# ('impala', [2004]),
-# ('opel', [2001, 2002, 2003, 2005, 2006]),
-# ('taurus', [2001, 2002]),
-# ('yugo', [2004])]
-# no other cars have same year and escort 2005, accord 2006  => no others are in 2005/2006
-drop_inplace(df, (df['eyear'].isin([2005, 2006])) & ~(df['everyday'].isin(['escort', 'accord']) ))
-# [('corniche', [1984]),
-#  ('corvair', [1965, 1966]),
-#  ('countach', [1979]),
-# corniche in 1984 means no one else can be 1984 since countach 1979 and ferrari is 1979
-drop_inplace(df, (df['cyear'].isin([1984])) & ~(df['classic'].isin(['corniche']) ))
-#  ('oliver',
-#   [11,
-#    12,
-#    13,
-#    14,
-#    15,
-#    16,
-#    17,
-#    18,
-#    19,
-#    20,
-#    21,
-#    22,
-#    23,
-#    24,
-#    25,
-#    26,
-#    27,
-#    29,
-#    30,
-#    31,
-#    32,
-#    33,
-#    34,
-#    35,
-#    36]),
-#  ('regina',
-#   [14,
-#    15,
-#    16,
-#    17,
-#    18,
-#    19,
-#    21,
-#    22,
-#    23,
-#    24,
-#    26,
-#    27,
-#    28,
-#    29,
-#    30,
-#    31,
-#    32,
-#    33,
-#    34,
-#    36]),
-#  ('william', [22, 24, 25])]
-# William and Oliver live in even house numbers. One owns two cars that are 35 years apart in age.
-# oliver must 35 years apart since william not possible
-drop_inplace(df, (df['name'].isin(['oliver'])) & ~(df['dyear'].isin([35]) ))
-# [('elizabeth', ['accord']),
-#  ('lucy', ['dart']),
-#  ('natalie', ['escort']),
-#  ('nicole', ['taurus']),
-#  ('oliver', ['opel']),
-#  ('regina', ['impala']),
-#  ('william', ['opel', 'yugo'])]
-# 7
-# oliver is opel => william is yugo
-drop_inplace(df, (df['name'].isin(['oliver'])) & ~(df['everyday'].isin(['opel']) ))
-drop_inplace(df, ~(df['name'].isin(['oliver'])) & (df['everyday'].isin(['opel']) ))
-# three houses in the middle (... and the owner of a car manufactured in 2001
-# [(1, [2005]),
-#  (2, [2004]),
-#  (3, [2006]),
-#  (4, [2004]),
-#  (5, [2001, 2002]),
-#  (6, [2001, 2003]),
-#  (7, [2007])]
-# => house 5 is eyear in 2001
-drop_inplace(df, (df['house'].isin([5])) & ~(df['eyear'].isin([2001]) ))
-# 5. there exists a owner with 24 year difference
-# 3. there exists an owner whose two cars were 26 years apart in age.
-drop_inplace(df, (df['house'].isin([5])) & ~(df['eyear'].isin([2001]) ))
-# [(1, [21]),
-#  (2, [25]),
-#  (3, [16, 17, 18, 19, 20, 21, 23, 24, 25]),
-#  (4,
-#   [14,
-#    15,
-#    16,
-#    17,
-#    18,
-#    19,
-#    21,
-#    22,
-#    23,
-#    24,
-#    26,
-#    27,
-#    28,
-#    29,
-#    30,
-#    31,
-#    32,
-#    33,
-#    34,
-#    36]),
-#  (5, [36]),
-#  (6, [35]),
-#  (7, [28])]
-#
-# => 24 year apart in house 3 and 26 year apart in house 4
-drop_inplace(df, (df['house'].isin([3])) & ~(df['dyear'].isin([24]) ))
-drop_inplace(df, (df['house'].isin([4])) & ~(df['dyear'].isin([26]) ))
+# regina next to corvair and el dorado => regina cannot be in 3, and must be 4/5 => regina in 5
+drop_inplace(df, ~(df['house'].isin([4, 5])) & (df['name'].isin(['regina']) ))
+drop_inplace(df, ~(df['house'].isin([5])) & (df['name'].isin(['regina']) ))
+drop_inplace(df, (df['house'].isin([5])) & ~(df['name'].isin(['regina']) ))
 
-# no other cars manufactured in same year and nicole/taurus in 2001 => oliver is 2003
-drop_inplace(df, (df['name'].isin(['oliver'])) & (df['eyear'].isin([2001]) ))
+drop_inplace(df, ~(df['house'].isin([4, 6])) & (df['classic'].isin(['el dorado', 'corvair']) ))
+drop_inplace(df, (df['house'].isin([4, 6])) & ~(df['classic'].isin(['el dorado', 'corvair']) ))
+drop_inplace(df, (df['house'].isin([2])) & ~(df['classic'].isin(['countach']) ))
 
-
-#
-#              name  house everyday  eyear    classic  cyear  dyear  hmatch
-# 15851     william      2     yugo   2004   countach   1979     25   False
-# 103969     oliver      6     opel   2003     spider   1968     35   False
-# 132638  elizabeth      3   accord   2006  el dorado   1982     24   False
-# 224555       lucy      7     dart   2007    ferrari   1979     28    True
-# 233536    natalie      1   escort   2005   corniche   1984     21   False
-# 326951     nicole      5   taurus   2001    corvair   1965     36   False
-# 374602     regina      4   impala   2004    porsche   1978     26    True
-#
-# ANSWER:
-# house        name  everyday  eyear    classic  cyear
-#     1     natalie    escort   2005   corniche   1984
-#     2     william      yugo   2004   countach   1979
-#     3   elizabeth    accord   2006  el dorado   1982
-#     4      regina    impala   2004    porsche   1978
-#     5      nicole    taurus   2001    corvair   1965
-#     6      oliver      opel   2003     spider   1968
-#     7        lucy      dart   2007    ferrari   1979
-print(df)
-
-### single owner
-
-# years apart
-# -36
-# -35
-# -28
-# 26 *
-# 24 *
-# -21
-#
-# -25
+drop_inplace(df, (df['everyday'].isin(['accord'])) & ~(df['classic'].isin(['ferrari']) ))
+drop_inplace(df, ~(df['everyday'].isin(['accord'])) & (df['classic'].isin(['ferrari']) ))
+drop_inplace(df, (df['everyday'].isin(['taurus'])) & ~(df['classic'].isin(['porsche', 'spider']) ))
+drop_inplace(df, ~(df['everyday'].isin(['impala'])) & (df['eyear'].isin([2004]) ))
+drop_inplace(df, (df['everyday'].isin(['taurus'])) & (df['house'].isin([3]) ))
+drop_inplace(df, (df['eyear'].isin([2006])) & ~(df['house'].isin([3, 5]) ))
+drop_inplace(df, (df['eyear'].isin([2001])) & (df['classic'].isin(['porsche']) ))
+# contradiction because william or oliver need a 35 year difference, and not possible
